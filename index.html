@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AutoFlow" />
+  <meta name="theme-color" content="#0A0A0F" />
+  <title>AutoFlow AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+    :root {
+      --bg: #0A0A0F;
+      --surface: #111122;
+      --border: #1E1E35;
+      --accent: #00E5A0;
+      --accent2: #00C2FF;
+      --text: #E8E8F0;
+      --muted: #555570;
+      --danger: #FF6B6B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .header {
+      padding: 52px 20px 16px;
+      background: linear-gradient(180deg, #0D0D1A 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .status-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 9px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+    .section { padding: 20px 20px 0; }
+    .section-title {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .email-module {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .module-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .module-title { display: flex; align-items: center; gap: 10px; }
+    .module-icon { font-size: 20px; }
+    .module-name { font-weight: 600; font-size: 14px; }
+    .module-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .toggle {
+      width: 36px; height: 20px;
+      border-radius: 10px;
+      background: var(--accent);
+      position: relative;
+      cursor: pointer;
+    }
+    .toggle.off { background: #2A2A3F; }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 18px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: white;
+      transition: left 0.2s;
+    }
+    .toggle.off .toggle-thumb { left: 3px; }
+    .email-list { padding: 0 16px 14px; }
+    .email-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .email-item:last-child { border-bottom: none; }
+    .email-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #0A0A0F;
+      flex-shrink: 0;
+    }
+    .email-content { flex: 1; min-width: 0; }
+    .email-from { font-size: 12px; font-weight: 600; }
+    .email-preview { font-size: 10px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .email-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .email-time { font-size: 9px; color: var(--muted); }
+    .email-badge {
+      background: var(--accent);
+      color: #0A0A0F;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      backdrop-filter: blur(4px);
+      align-items: flex-end;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #13132A;
+      border: 1px solid var(--border);
+      border-radius: 24px 24px 0 0;
+      padding: 20px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .modal-sub { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+    .original-email {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .original-label { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .ai-response {
+      background: rgba(0,229,160,0.05);
+      border: 1px solid rgba(0,229,160,0.2);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .ai-label {
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn {
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #0A0A0F;
+    }
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .modules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .mini-module {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      opacity: 0.5;
+    }
+    .mini-icon { font-size: 22px; margin-bottom: 8px; }
+    .mini-name { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+    .mini-desc { font-size: 9px; color: var(--muted); line-height: 1.4; }
+    .mini-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(85,85,112,0.2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .activity-list {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    .activity-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-emoji { font-size: 14px; margin-top: 1px; }
+    .activity-text { font-size: 11px; color: #B0B0C8; line-height: 1.4; }
+    .activity-time { font-size: 9px; color: var(--muted); margin-top: 2px; }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div class="logo">AutoFlow AI</div>
+    <div class="status-badge">
+      <div class="dot"></div>
+      En ligne
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value">142</div>
+      <div class="stat-label">Emails traités</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">~24h</div>
+      <div class="stat-label">Économisées</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">94%</div>
+      <div class="stat-label">Satisfaction</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Module actif</div>
+  <div class="email-module">
+    <div class="module-header">
+      <div class="module-title">
+        <div class="module-icon">📧</div>
+        <div>
+          <div class="module-name">Emails IA</div>
+          <div class="module-sub">Réponses automatiques actives</div>
+        </div>
+      </div>
+      <div class="toggle" id="emailToggle" onclick="toggleEmail()">
+        <div class="toggle-thumb"></div>
+      </div>
+    </div>
+    <div class="email-list" id="emailList">
+      <div class="email-item" onclick="openModal('Jean Tremblay', 'Demande de soumission', 'Bonjour, j\'aimerais avoir une soumission pour vos services.', 'Bonjour M. Tremblay,\n\nMerci pour votre intérêt! Nous serions ravis de vous présenter nos services.\n\nCordialement,\nL\'équipe AutoFlow')">
+        <div class="email-avatar">JT</div>
+        <div class="email-content">
+          <div class="email-from">Jean Tremblay</div>
+          <div class="email-preview">Demande de soumission pour vos services...</div>
+        </div>
+        <div class="email-meta">
+          <div class="email-time">14h32</div>
+          <div class="email-badge">IA ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Prochains modules</div>
+  <div class="modules-grid">
+    <div class="mini-module">
+      <div class="mini-icon">📅</div>
+      <div class="mini-name">Rendez-vous</div>
+      <div class="mini-desc">Prise de RDV automatique</div>
+      <div class="mini-tag">Bientôt</div>
+    </div>
+    <div class="mini-module">
+      <div class="mini-icon">💬</div>
+      <div class="mini-name">Chatbot</div>
+      <div class="mini-desc">Assistant 24/7 sur site web</div>
+      <div class="mini-tag">Bientôt</div>
+    </div>
+    <div class="mini-module">
+      <div class="mini-icon">📊</div>
+      <div class="mini-name">Rapports</div>
+      <div class="mini-desc">Rapports auto hebdomadaires</div>
+      <div class="mini-tag">Bientôt</div>
+    </div>
+    <div class="mini-module">
+      <div class="mini-icon">🧾</div>
+      <div class="mini-name">Factures</div>
+      <div class="mini-desc">Relances automatiques</div>
+      <div class="mini-tag">Bientôt</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Activité récente</div>
+  <div class="activity-list">
+    <div class="activity-item">
+      <div class="activity-emoji">📧</div>
+      <div>
+        <div class="activity-text">Email de Jean Tremblay → Brouillon généré</div>
+        <div class="activity-time">Il y a 2 min</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalFrom"></div>
+    <div class="modal-sub" id="modalSubject"></div>
+    <div class="original-email">
+      <div class="original-label">📩 Email reçu</div>
+      <div id="modalOriginal"></div>
+    </div>
+    <div class="ai-response">
+      <div class="ai-label">🤖 Réponse générée par l'IA</div>
+      <div id="modalResponse" style="white-space: pre-line;"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeModal()">✕ Ignorer</button>
+      <button class="btn btn-primary" onclick="approveEmail()">✓ Approuver</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleEmail() {
+    const toggle = document.getElementById('emailToggle');
+    toggle.classList.toggle('off');
+  }
+  function openModal(from, subject, original, response) {
+    document.getElementById('modalFrom').textContent = from;
+    document.getElementById('modalSubject').textContent = subject;
+    document.getElementById('modalOriginal').textContent = original;
+    document.getElementById('modalResponse').textContent = response;
+    document.getElementById('modalOverlay').classList.add('active');
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+  }
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+  function approveEmail() {
+    closeModal();
+    const toast = document.createElement('div');
+    toast.textContent = '✓ Brouillon approuvé!';
+    toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#00E5A0;color:#0A0A0F;padding:12px 20px;border-radius:20px;font-size:12px;font-weight:600;z-index:999;';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+</script>
+</body>
+</html>
