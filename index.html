@@ -290,7 +290,7 @@
   async function fetchEmails() {
     try {
       const res = await fetch(https://api.jsonbin.io/v3/b/${BIN_ID}/latest, {
-        headers: { 'X-Master-Key': MASTER_KEY }
+        
       });
       const data = await res.json();
       emails = data.record.emails || [];
