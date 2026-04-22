@@ -289,9 +289,7 @@
 
   async function fetchEmails() {
     try {
-      const res = await fetch(https://api.jsonbin.io/v3/b/${BIN_ID}/latest, {
-        
-      });
+      const res = await fetch('https://api.jsonbin.io/v3/b/69e82551856a6821895bfebc/latest');
       const data = await res.json();
       emails = data.record.emails || [];
       renderEmails();
@@ -299,7 +297,6 @@
       console.log('Erreur:', e);
     }
   }
-
   function renderEmails() {
     const list = document.getElementById('emailList');
     document.getElementById('totalEmails').textContent = emails.length;
