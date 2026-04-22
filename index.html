@@ -283,18 +283,32 @@
 </div>
 
 <script>
-  let emails = JSON.parse(localStorage.getItem('autoflow_emails') || '[]');
-  let emailCount = emails.length;
+  const BIN_ID = '69e81b4a36566621a8da7f0f';
+  const MASTER_KEY = 'ta-clé-jsonbin-ici';
+  let emails = [];
+
+  async function fetchEmails() {
+    try {
+      const res = await fetch(https://api.jsonbin.io/v3/b/${BIN_ID}/latest, {
+        headers: { 'X-Master-Key': MASTER_KEY }
+      });
+      const data = await res.json();
+      emails = data.record.emails || [];
+      renderEmails();
+    } catch(e) {
+      console.log('Erreur:', e);
+    }
+  }
 
   function renderEmails() {
     const list = document.getElementById('emailList');
-    document.getElementById('totalEmails').textContent = emailCount;
-    document.getElementById('timeSaved').textContent = Math.round(emailCount * 0.1) + 'h';
+    document.getElementById('totalEmails').textContent = emails.length;
+    document.getElementById('timeSaved').textContent = Math.round(emails.length * 0.1) + 'h';
     if (emails.length === 0) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div>En attente de vrais emails...</div><div style="font-size:10px;margin-top:4px;">Les emails traités par Make apparaîtront ici</div></div>';
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div>En attente de vrais emails...</div></div>';
       return;
     }
-    list.innerHTML = emails.map((e, i) => `
+    list.innerHTML = emails.map(e => `
       <div class="email-item" onclick="openModal('${e.from}','${e.subject}','${e.original}','${e.response}')">
         <div class="email-avatar">${e.from.substring(0,2).toUpperCase()}</div>
         <div class="email-content">
@@ -331,18 +345,13 @@
 
   function approveEmail() {
     closeModal();
-    showToast('✓ Brouillon approuvé!');
-  }
-
-  function showToast(msg) {
     const t = document.createElement('div');
-    t.textContent = msg;
+    t.textContent = '✓ Brouillon approuvé!';
     t.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#00E5A0;color:#0A0A0F;padding:12px 20px;border-radius:20px;font-size:12px;font-weight:600;z-index:999;';
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 3000);
   }
 
-  renderEmails();
+  fetchEmails();
+  setInterval(fetchEmails, 30000);
 </script>
-</body>
-</html>
