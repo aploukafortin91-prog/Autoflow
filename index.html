@@ -305,21 +305,25 @@
       list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div>En attente de vrais emails...</div></div>';
       return;
     }
-    list.innerHTML = emails.map(e => `
-      <div class="email-item" onclick="openModal('${e.from}','${e.subject}','${e.original}','${e.response}')">
-        <div class="email-avatar">${e.from.substring(0,2).toUpperCase()}</div>
+    list.innerHTML = emails.map((e, i) => `
+      <div class="email-item" onclick="openEmail(${i})">
+        <div class="email-avatar">${(e.from || 'XX').substring(0,2).toUpperCase()}</div>
         <div class="email-content">
-          <div class="email-from">${e.from}</div>
-          <div class="email-preview">${e.subject}</div>
+          <div class="email-from">${e.from || 'Inconnu'}</div>
+          <div class="email-preview">${e.subject || ''}</div>
         </div>
         <div class="email-meta">
-          <div class="email-time">${e.time}</div>
+          <div class="email-time">${e.time || ''}</div>
           <div class="email-badge">IA ✓</div>
         </div>
       </div>
     `).join('');
   }
 
+  function openEmail(index) {
+    const e = emails[index];
+    openModal(e.from || 'Inconnu', e.subject || '', e.original || '', e.response || '');
+  }
   function toggleEmail() {
     document.getElementById('emailToggle').classList.toggle('off');
   }
